@@ -105,11 +105,16 @@ def q3():
     print()
     stop1 = input('Stop 1: ')
     stop2 = input('Stop 2: ')
-    print(f"Route: {' -> '.join(compute_route_between(stop1,stop2))}")
+
+    route = compute_route_between(stop1,stop2)
+    if route == None:
+        print("No route possible.")
+    else:
+        print(f"Route: {' -> '.join(route)}")
 
 # finds a path between any two T stops, if it exists
 # arguments: first stop, second stop
-# returns: path taken as a list
+# returns: path taken as a list, or None if not possible
 def compute_route_between(stop1: str, stop2: str) -> list[str]:
     # approach: consider stops and routes as edges in a graph.
     #           then, run a standard bfs implementation to find
@@ -125,12 +130,15 @@ def compute_route_between(stop1: str, stop2: str) -> list[str]:
             route_name = route['attributes']['long_name']
             neighbors[stop_name].add(route_name)
             neighbors[route_name].add(stop_name)
-    
+
+    if stop1 not in neighbors or stop2 not in neighbors:
+        return None
+
     return bfs(neighbors, stop1, stop2)
 
 # standard bfs implementation
 # arguments: neighbors (dict of node -> connected nodes), start node, end node
-# returns: path taken as a list
+# returns: path taken as a list, or None if not possible
 def bfs(neighbors: dict[str, list[str]], start: str, end: str) -> list[str]:
     visited = [start]
     queue = [(start, [])] # (node, path_to_node), so we can keep track of how we got there.
